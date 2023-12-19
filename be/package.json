@@ -31,10 +31,12 @@
     "@prisma/client": "^5.7.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "immer": "^10.0.3",
     "jsonwebtoken": "^9.0.2",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
