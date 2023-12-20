@@ -3,27 +3,30 @@ import {
   QueryKey,
   QueryObserverOptions,
   QueryOptions,
+  UseQueryResult,
   useQuery,
 } from "react-query";
+import { TQueryKeyPayload } from "./types";
 
 export const defaultQueryFn = async ({ queryKey }: { queryKey: QueryKey }) => {
+  const payload = queryKey as [string, TQueryKeyPayload];
   const HEADER_OPTIONS = {
     "Content-Type": "application/json",
-    ...(queryKey[4] as object),
+    ...payload[1].headers,
   };
 
   const options: RequestInit = {
-    method: (queryKey[1] as string | undefined) || "GET",
-    body: JSON.stringify(queryKey[3]) || null,
+    method: (payload[1].method as string | undefined) || "GET",
+    body: JSON.stringify(payload[1].body) || null,
     headers: HEADER_OPTIONS,
   };
 
   if (!options.body) delete options.body;
 
   const res = await fetch(
-    `http://localhost:3000${queryKey[0]}`,
+    `http://localhost:3000${payload[0]}`,
     options as RequestInit
-  ).then((res) => res);
+  );
 
   if (!res.ok) throw new Error("Network response was not ok");
   return res;
@@ -40,25 +43,30 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const useApiQuery = ({
+export const useApiQuery = <T extends object>({
   url,
   method,
   body,
   params,
   headers,
+  initiate,
   options,
 }: {
   url: string;
   method?: "GET" | "POST";
   body?: unknown;
-  headers?: HeadersInit;
+  headers?: { [key: string]: string };
   params?: object;
-  options?: QueryOptions & QueryObserverOptions;
+  initiate?: boolean;
+  options?: QueryOptions & QueryObserverOptions<T, any>;
 }) => {
   method = method || "GET";
 
-  const result = useQuery([url, method, params, body, headers], {
-    enabled: method === "POST" ? false : true,
+  const queryKey: QueryKey = [url, { method, params, body, headers }];
+
+  const result: UseQueryResult<T> = useQuery({
+    queryKey: queryKey,
+    enabled: initiate ? initiate : method === "POST" ? false : true,
     ...options,
   } as QueryOptions);
   return result;
