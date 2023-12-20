@@ -12,6 +12,7 @@ const LoginPage: React.FC = () => {
     body: data,
     options: {
       onSuccess: async (data) => {
+        ``;
         const token = data.headers.get("access_token");
         if (!token) throw new Error("Error doesnt exist");
         window.localStorage.setItem("accessToken", token);

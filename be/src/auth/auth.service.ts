@@ -33,6 +33,7 @@ export class AuthService {
 
     res
       .setHeader('access_token', token)
+      .setHeader('Access-Control-Expose-Headers', '*')
       .json({ message: 'login is successful' });
   }
 }
